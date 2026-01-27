@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const app = express();
 
@@ -9,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Database Connection
-const databaseUrl = ""; // Use 127.0.0.1 for local stability
+const databaseUrl = process.env.MONGO_URL; // Use 127.0.0.1 for local stability
 
 mongoose.connect(databaseUrl)
     .then(() => {
