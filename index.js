@@ -1,16 +1,21 @@
 const cors = require("cors");
 const dotenv = require("dotenv");
-const express = require("express"); // <--- ADD THIS LINE
+const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./Routes/userRoutes");
+const orderRoutes = require("./Routes/orderRoutes");
+const reviewRoutes = require("./Routes/reviewRoutes");
 const productRoutes = require("./Routes/productRoutes");
-dotenv.config();
+const categoryRoutes = require("./Routes/categoryRoutes");
 
+// Load environment variables FIRST
+dotenv.config();
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads')); // Serve uploaded files
 
 // Database Connection
 const databaseUrl = process.env.MONGO_URL; // Use 127.0.0.1 for local stability
@@ -19,6 +24,9 @@ const PORT = process.env.PORT || 3000;
 // Table of Routes Implementation
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/orders", orderRoutes);
 
 // Error Handling (Optional but recommended)
 app.use((req, res) => {
