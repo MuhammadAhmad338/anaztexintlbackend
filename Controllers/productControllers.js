@@ -57,7 +57,7 @@ const createProduct = async (req, res) => {
   }
 };
 
-const updateProduct = async (req, res) => {
+const editProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.status(200).json({ success: true, data: product });
@@ -76,7 +76,6 @@ const deleteProduct = async (req, res) => {
 };
 
 // --- Public Logic ---
-
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find();
@@ -89,7 +88,7 @@ const getAllProducts = async (req, res) => {
 // Export all at the end
 module.exports = {
   createProduct,
-  updateProduct,
+  editProduct,
   deleteProduct,
   getAllProducts
 };

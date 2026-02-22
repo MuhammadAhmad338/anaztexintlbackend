@@ -4,15 +4,15 @@ const jwt = require("jsonwebtoken");
 
 // 1. REGISTER USER
 const registerUser = async (req, res) => {
-    console.log('🔴 REGISTER API HIT - New user registration attempt:', { email: req.body.email, name: req.body.name });
+    console.log('REGISTER API HIT - New user registration attempt:', { email: req.body.email, name: req.body.name });
     try {
         const { name, email, password, address, role } = req.body;
 
         // Check if user already exists
         const userExists = await User.findOne({ email });
         if (userExists) {
-            console.log('❌ REGISTER FAILED - User already exists:', { email });
-        return res.status(400).json({ message: "User already exists" });
+            console.log('REGISTER FAILED - User already exists:', { email });
+            return res.status(400).json({ message: "User already exists" });
         }
 
         // Hash password
@@ -28,7 +28,7 @@ const registerUser = async (req, res) => {
             address
         });
 
-        console.log('✅ REGISTER SUCCESS - User registered successfully:', { userId: user._id, email: user.email });
+        console.log('REGISTER SUCCESS - User registered successfully:', { userId: user._id, email: user.email });
         res.status(201).json({
             success: true,
             message: "User registered successfully",
@@ -42,7 +42,7 @@ const registerUser = async (req, res) => {
 
 // 2. LOGIN USER
 const loginUser = async (req, res) => {
-    console.log('🟢 LOGIN API HIT - User login attempt:', { email: req.body.email });
+    console.log('LOGIN API HIT - User login attempt:', { email: req.body.email });
     try {
         const { email, password } = req.body;
 
