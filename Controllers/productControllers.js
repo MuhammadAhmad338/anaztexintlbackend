@@ -59,9 +59,60 @@ const createProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json({ success: true, data: product });
+    console.log("EDIT PRODUCT API HIT - WITH MULTIPART SUPPORT");
+
+    const upload = createS3Upload();
+
+    upload.array('images', 5)(req, res, async (err) => {
+      if (err) {
+        console.log("UPLOAD ERROR:", err);
+        return res.status(400).json({ success: false, message: err.message });
+      }
+
+      console.log("EDIT BODY:", req.body);
+      console.log("EDIT FILES:", req.files);
+
+      // 1. Convert Category Name to ID if needed
+      let categoryId = req.body.category;
+      if (categoryId) {
+        const category = await Category.findOne({ name: categoryId });
+        if (category) {
+          categoryId = category._id;
+          console.log(`Converted category "${req.body.category}" to ID: ${categoryId}`);
+        }
+      }
+
+      // 2. Prepare update data
+      const updateData = { ...req.body };
+      if (categoryId) updateData.category = categoryId;
+
+      // 3. Handle new images if any were uploaded
+      if (req.files && req.files.length > 0) {
+        const newImageUrls = req.files.map(file => file.location);
+
+        // Option A: Replace images completely
+        // updateData.images = newImageUrls;
+
+        // Option B: Append to existing images (Better for "adding" photos)
+        const existingProduct = await Product.findById(req.params.id);
+        if (existingProduct) {
+          updateData.images = [...(existingProduct.images || []), ...newImageUrls];
+        } else {
+          updateData.images = newImageUrls;
+        }
+      }
+
+      const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
+
+      if (!product) {
+        return res.status(404).json({ success: false, message: "Product not found" });
+      }
+
+      console.log("Product updated successfully");
+      res.status(200).json({ success: true, data: product });
+    });
   } catch (error) {
+    console.error("❌ Edit Error:", error);
     res.status(400).json({ success: false, message: error.message });
   }
 };
