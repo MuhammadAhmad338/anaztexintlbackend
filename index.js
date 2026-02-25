@@ -7,7 +7,7 @@ const orderRoutes = require("./Routes/orderRoutes");
 const reviewRoutes = require("./Routes/reviewRoutes");
 const productRoutes = require("./Routes/productRoutes");
 const categoryRoutes = require("./Routes/categoryRoutes");
-
+const paymentsRoutes = require("./Routes/paymentRoutes");
 // Load environment variables FIRST
 dotenv.config();
 const app = express();
@@ -27,6 +27,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/payments", paymentsRoutes);
 
 // Error Handling (Optional but recommended)
 app.use((req, res) => {
