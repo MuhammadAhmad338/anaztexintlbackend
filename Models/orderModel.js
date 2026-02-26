@@ -65,6 +65,9 @@ const orderSchema = new mongoose.Schema({
     paidAt: {
         type: Date
     },
+    stripePaymentIntentId: {
+        type: String
+    },
     orderStatus: {
         type: String,
         enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],

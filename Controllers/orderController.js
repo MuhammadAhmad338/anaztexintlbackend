@@ -4,6 +4,7 @@ const Product = require('../Models/productModel');
 // Create new order
 const createOrder = async (req, res) => {
     try {
+        console.log('Order request body:', req.body);
         const {
             orderItems,
             shippingAddress,
@@ -11,11 +12,18 @@ const createOrder = async (req, res) => {
             itemsPrice,
             taxPrice,
             shippingPrice,
-            totalPrice
+            totalPrice,
+            stripePaymentIntentId
         } = req.body;
 
         if (orderItems && orderItems.length === 0) {
             return res.status(400).json({ message: 'No order items' });
+        }
+
+        // Validate shipping address
+        if (!shippingAddress || !shippingAddress.fullName || !shippingAddress.address || 
+            !shippingAddress.city || !shippingAddress.postalCode || !shippingAddress.country || !shippingAddress.phone) {
+            return res.status(400).json({ message: 'Complete shipping address is required' });
         }
 
         // Use userId from request body if available (useful for testing without auth token)
@@ -25,20 +33,45 @@ const createOrder = async (req, res) => {
             return res.status(400).json({ message: 'User ID is required to create an order' });
         }
 
+        // Transform order items to match schema
+        const transformedOrderItems = orderItems.map(item => {
+            // Validate and convert product ID to ObjectId
+            if (!item.id) {
+                throw new Error(`Product ID is required for item: ${item.name}`);
+            }
+            
+            // Check if it's a valid ObjectId (24 character hex string)
+            if (typeof item.id === 'string' && item.id.length === 24 && /^[0-9a-fA-F]{24}$/.test(item.id)) {
+                return {
+                    product: item.id,
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price,
+                    variant: item.variant || null
+                };
+            } else {
+                throw new Error(`Invalid Product ID format for "${item.name}". Expected 24-character ObjectId, got: ${item.id}`);
+            }
+        });
+
         const order = new Order({
             user: userId,
-            orderItems,
+            orderItems: transformedOrderItems,
             shippingAddress,
             paymentMethod,
             itemsPrice,
             taxPrice,
             shippingPrice,
-            totalPrice
+            totalPrice,
+            stripePaymentIntentId
         });
+
+        console.log('Order to be created:', order);
 
         const createdOrder = await order.save();
         res.status(201).json(createdOrder);
     } catch (error) {
+        console.error('Order creation error:', error);
         res.status(500).json({ message: 'Failed to create order', error: error.message });
     }
 };
