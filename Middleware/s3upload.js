@@ -13,12 +13,15 @@ const createS3Upload = () => {
   });
 
   return multer({
+    limits: {
+      fileSize: 50 * 1024 * 1024 // 50MB
+    },
     storage: multerS3({
       s3: s3,
       bucket: process.env.BUCKET_NAME,
       contentType: multerS3.AUTO_CONTENT_TYPE,
 
-    //  acl: "public-read",
+      //  acl: "public-read",
       metadata: function (req, file, cb) {
         cb(null, { fieldName: file.fieldname });
       },

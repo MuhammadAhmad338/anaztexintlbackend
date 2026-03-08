@@ -5,6 +5,7 @@ const Product = require('../Models/productModel');
 const createOrder = async (req, res) => {
     try {
         console.log('Order request body:', req.body);
+
         const {
             orderItems,
             shippingAddress,
@@ -16,31 +17,34 @@ const createOrder = async (req, res) => {
             stripePaymentIntentId
         } = req.body;
 
-        if (orderItems && orderItems.length === 0) {
+        if (!orderItems || orderItems.length === 0) {
             return res.status(400).json({ message: 'No order items' });
         }
 
         // Validate shipping address
-        if (!shippingAddress || !shippingAddress.fullName || !shippingAddress.address || 
-            !shippingAddress.city || !shippingAddress.postalCode || !shippingAddress.country || !shippingAddress.phone) {
+        if (
+            !shippingAddress ||
+            !shippingAddress.fullName ||
+            !shippingAddress.address ||
+            !shippingAddress.city ||
+            !shippingAddress.postalCode ||
+            !shippingAddress.country ||
+            !shippingAddress.phone
+        ) {
             return res.status(400).json({ message: 'Complete shipping address is required' });
         }
 
-        // Use userId from request body if available (useful for testing without auth token)
         const userId = req.user ? req.user._id : req.body.userId;
-
         if (!userId) {
             return res.status(400).json({ message: 'User ID is required to create an order' });
         }
 
-        // Transform order items to match schema
+        // Transform order items
         const transformedOrderItems = orderItems.map(item => {
-            // Validate and convert product ID to ObjectId
             if (!item.id) {
                 throw new Error(`Product ID is required for item: ${item.name}`);
             }
-            
-            // Check if it's a valid ObjectId (24 character hex string)
+
             if (typeof item.id === 'string' && item.id.length === 24 && /^[0-9a-fA-F]{24}$/.test(item.id)) {
                 return {
                     product: item.id,
@@ -54,6 +58,22 @@ const createOrder = async (req, res) => {
             }
         });
 
+        // -----------------------------
+        // Payment Logic
+        // -----------------------------
+        let isPaid = false;
+        let paidAt = null;
+        let paymentStatus = "Pending";
+
+        if (paymentMethod && paymentMethod.toLowerCase().trim() === "stripe") {
+            isPaid = true;
+            paidAt = Date.now();
+            paymentStatus = "Completed";
+        }
+
+        console.log("Payment Method:", paymentMethod);
+        console.log("isPaid will be set to:", isPaid);
+
         const order = new Order({
             user: userId,
             orderItems: transformedOrderItems,
@@ -63,16 +83,26 @@ const createOrder = async (req, res) => {
             taxPrice,
             shippingPrice,
             totalPrice,
-            stripePaymentIntentId
+            stripePaymentIntentId,
+            isPaid,
+            paidAt,
+            paymentStatus
         });
 
         console.log('Order to be created:', order);
 
         const createdOrder = await order.save();
+
+        console.log('Created order:', createdOrder);
+
         res.status(201).json(createdOrder);
+
     } catch (error) {
         console.error('Order creation error:', error);
-        res.status(500).json({ message: 'Failed to create order', error: error.message });
+        res.status(500).json({
+            message: 'Failed to create order',
+            error: error.message
+        });
     }
 };
 
@@ -86,19 +116,26 @@ const getOrderById = async (req, res) => {
         } else {
             res.status(404).json({ message: 'Order not found' });
         }
+
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch order', error: error.message });
+        res.status(500).json({
+            message: 'Failed to fetch order',
+            error: error.message
+        });
     }
 };
 
 // Get logged in user orders
 const getMyOrders = async (req, res) => {
     try {
-        const userId = req.user ? req.user._id : req.params.userId; // fallback if no auth middleware
+        const userId = req.user ? req.user._id : req.params.userId;
         const orders = await Order.find({ user: userId });
         res.json(orders);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch user orders', error: error.message });
+        res.status(500).json({
+            message: 'Failed to fetch user orders',
+            error: error.message
+        });
     }
 };
 
@@ -108,7 +145,10 @@ const getOrders = async (req, res) => {
         const orders = await Order.find({}).populate('user', 'id name');
         res.json(orders);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch all orders', error: error.message });
+        res.status(500).json({
+            message: 'Failed to fetch all orders',
+            error: error.message
+        });
     }
 };
 
@@ -137,7 +177,10 @@ const updateOrderStatus = async (req, res) => {
             res.status(404).json({ message: 'Order not found' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'Failed to update order status', error: error.message });
+        res.status(500).json({
+            message: 'Failed to update order status',
+            error: error.message
+        });
     }
 };
 
