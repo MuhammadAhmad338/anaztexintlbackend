@@ -136,10 +136,26 @@ const getAllProducts = async (req, res) => {
   }
 };
 
+//Get the product based on the category
+const getProductsByCategory = async (req, res) => {
+  try {
+    // Clean the category parameter to remove whitespace and newlines
+    const categoryId = req.params.category.trim();
+    console.log('Cleaned category ID:', categoryId);
+    
+    const products = await Product.find({ category: categoryId });
+    res.status(200).json({ success: true, data: products });
+  } catch (error) {
+    console.error('Category fetch error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Export all at the end
 module.exports = {
   createProduct,
   editProduct,
   deleteProduct,
-  getAllProducts
+  getAllProducts,
+  getProductsByCategory
 };

@@ -3,7 +3,7 @@ const router = express.Router();
 const { verifyToken } = require("../Middleware/auth");
 const { isAdmin } = require("../Middleware/adminMiddleware");
 // const uploadMiddleware = require("../Middleware/s3upload"); // This is now a promise
-const { getAllProducts, createProduct, editProduct, deleteProduct } = require("../Controllers/productControllers");
+const { getAllProducts, createProduct, editProduct, deleteProduct, getProductsByCategory } = require("../Controllers/productControllers");
 
 // Customer Routes
 router.get("/", getAllProducts);
@@ -11,6 +11,7 @@ router.get("/", getAllProducts);
 // Admin Routes - we'll handle upload middleware in the controller
 router.post("/", verifyToken, isAdmin, createProduct);
 router.put("/:id", verifyToken, isAdmin, editProduct);
+router.get("/category/:category", getProductsByCategory);
 router.delete("/:id", verifyToken, isAdmin, deleteProduct);
 
 module.exports = router;
