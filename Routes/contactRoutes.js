@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { submitContactForm, getAllContacts } = require("../Controllers/contactController");
-
-// Public route to submit contact form
+//hello
 router.post("/", submitContactForm);
 router.get("/", getAllContacts);
 
