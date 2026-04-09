@@ -1,5 +1,6 @@
 name: Deploy BackEnd to EC2
 
+# Trigger deployment on push to main branch
 on:
   push:
     branches:
@@ -10,10 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      # Step 1: Checkout the repo
+      - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # fetch all history for the repo
+          fetch-depth: 0
 
-      - name: Deploy to EC2 Server
+      # Step 2: Deploy to EC2
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -21,27 +27,22 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           passphrase: ${{ secrets.EC2_SSH_PASSPHRASE }}
           port: 22
-
           script: |
-            echo "Starting deployment..."
+            # Navigate to project directory
+            cd /home/${{ secrets.EC2_USER }}/anaztexintlbackend || mkdir -p /home/${{ secrets.EC2_USER }}/anaztexintlbackend && cd /home/${{ secrets.EC2_USER }}/anaztexintlbackend
 
-            # Navigate to backend folder
-            cd /home/ubuntu/anaztexintlbackend
+            # Configure Git to use GitHub Personal Access Token (for private repo)
+            git config --global url."https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/".insteadOf "https://github.com/"
 
-            echo "Pulling latest code..."
-            git fetch origin
+            # Reset and pull latest code
             git reset --hard origin/main
+            git pull origin main
 
-            echo "Installing dependencies..."
+            # Install/update dependencies
             npm install
 
-            echo "Stopping old PM2 process if exists..."
-            pm2 delete anaztexintlbackend || true
+            # Restart or start the app with PM2
+            pm2 restart anaztexintlbackend || pm2 start index.js --name anaztexintlbackend
 
-            echo "Starting backend with PM2..."
-            pm2 start index.js --name anaztexintlbackend
-
-            echo "Saving PM2..."
+            # Save PM2 process list
             pm2 save
-
-            echo "Deployment completed successfully."
