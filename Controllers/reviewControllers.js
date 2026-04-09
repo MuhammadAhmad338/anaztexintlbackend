@@ -44,6 +44,15 @@ const getProductReviews = async (req, res) => {
     }
 };
 
+const getAllReviews = async (req, res) => {
+    try {
+        const reviews = await Review.find().populate("user", "name").populate("product", "name");
+        res.status(200).json({ success: true, data: reviews });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
 const deleteReview = async (req, res) => {
     try {
         const review = await Review.findById(req.params.id);
