@@ -1,6 +1,6 @@
 const Contact = require("../Models/contactModel");
 
-exports.submitContactForm = async (req, res) => {
+const submitContactForm = async (req, res) => {
   try {
     const { firstName, lastName, email, subject, message } = req.body;
 
@@ -34,7 +34,7 @@ exports.submitContactForm = async (req, res) => {
   }
 };
 
-exports.getAllContacts = async (req, res) => {
+const getAllContacts = async (req, res) => {
   try {
     const contacts = await Contact.find().sort({ createdAt: -1 });
     res.status(200).json({
@@ -50,3 +50,8 @@ exports.getAllContacts = async (req, res) => {
     });
   }
 };
+
+module.exports = {
+  submitContactForm,
+  getAllContacts
+}
