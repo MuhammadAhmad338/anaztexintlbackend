@@ -44,9 +44,16 @@ const getProductReviews = async (req, res) => {
     }
 };
 
-const getAllReviews = async (req, res) => {
+const getTopThreeReviews = async (req, res) => {
     try {
-        const reviews = await Review.find().populate("user", "name").populate("product", "name");
+        // .sort({ rating: -1 }) sorts from 5 stars down to 1
+        // .limit(3) ensures only the first 3 results are returned
+        const reviews = await Review.find()
+            .populate("user", "name")
+            .populate("product", "name")
+            .sort({ rating: -1 }) 
+            .limit(3);
+
         res.status(200).json({ success: true, data: reviews });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
@@ -87,5 +94,5 @@ module.exports = {
     addReview,
     getProductReviews,
     deleteReview,
-    getAllReviews
+    getTopThreeReviews
 };
