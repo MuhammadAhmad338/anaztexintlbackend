@@ -10,31 +10,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Deploy to EC2
+      - name: Deploy to EC2 Server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          passphrase: ${{ secrets.EC2_SSH_PASSPHRASE }} # Add this line
+          passphrase: ${{ secrets.EC2_SSH_PASSPHRASE }}
           port: 22
+
           script: |
-            # Navigate to the project directory
-            # Note: I used /home/ubuntu based on your script, but ${{ secrets.EC2_USER }} is safer
-            cd /home/${{ secrets.EC2_USER }}/anaztexintlbackend || cd /home/ubuntu/anaztexintlbackend
-            
-            # Update the code
+            echo "Starting deployment..."
+
+            # Navigate to backend folder
+            cd /home/ubuntu/anaztexintlbackend
+
+            echo "Pulling latest code..."
+            git fetch origin
             git reset --hard origin/main
-            git pull origin main
-            
-            # Install dependencies
+
+            echo "Installing dependencies..."
             npm install
-            
-            # Restart or start the application
-            pm2 restart anaztexintlbackend || pm2 start index.js --name anaztexintlbackend
-            
-            # Save the PM2 process list
+
+            echo "Stopping old PM2 process if exists..."
+            pm2 delete anaztexintlbackend || true
+
+            echo "Starting backend with PM2..."
+            pm2 start index.js --name anaztexintlbackend
+
+            echo "Saving PM2..."
             pm2 save
+
+            echo "Deployment completed successfully."
