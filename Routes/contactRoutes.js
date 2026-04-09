@@ -4,8 +4,6 @@ const { submitContactForm, getAllContacts } = require("../Controllers/contactCon
 
 // Public route to submit contact form
 router.post("/", submitContactForm);
-
-// Get all contacts (for admin use)
 router.get("/", getAllContacts);
 
 module.exports = router;

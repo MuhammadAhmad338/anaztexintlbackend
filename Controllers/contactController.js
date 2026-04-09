@@ -1,13 +1,9 @@
 const Contact = require("../Models/contactModel");
 
-// @desc    Submit a contact form
-// @route   POST /api/contacts
-// @access  Public
 exports.submitContactForm = async (req, res) => {
   try {
     const { firstName, lastName, email, subject, message } = req.body;
 
-    // Validation
     if (!firstName || !lastName || !email || !subject || !message) {
       return res.status(400).json({
         success: false,
@@ -38,9 +34,6 @@ exports.submitContactForm = async (req, res) => {
   }
 };
 
-// @desc    Get all contact messages (for admin)
-// @route   GET /api/contacts
-// @access  Private/Admin (Placeholder for now)
 exports.getAllContacts = async (req, res) => {
   try {
     const contacts = await Contact.find().sort({ createdAt: -1 });
