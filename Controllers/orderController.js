@@ -143,7 +143,9 @@ const getMyOrders = async (req, res) => {
 // Get all orders (Admin only ideally)
 const getOrders = async (req, res) => {
     try {
-        const orders = await Order.find({}).populate('user', 'id name');
+        const orders = await Order.find({})
+            .populate('user', 'id name')
+            .sort({ createdAt: -1 });
         res.json(orders);
     } catch (error) {
         res.status(500).json({
