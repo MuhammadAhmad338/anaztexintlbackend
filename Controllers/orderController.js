@@ -51,7 +51,8 @@ const createOrder = async (req, res) => {
                     name: item.name,
                     quantity: item.quantity,
                     price: item.price,
-                    variant: item.variant || null
+                    size: item.size || null,
+                    variant: item.variant || item.size || null
                 };
             } else {
                 throw new Error(`Invalid Product ID format for "${item.name}". Expected 24-character ObjectId, got: ${item.id}`);
