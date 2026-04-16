@@ -26,7 +26,24 @@ const createS3Upload = () => {
         cb(null, { fieldName: file.fieldname });
       },
       key: function (req, file, cb) {
-        const folder = req.body.category === "Garments" ? "garments" : "cosmetics";
+        // Map categories to folder names
+        const categoryFolders = {
+          "Garments": "garments",
+          "Men": "men",
+          "Jewellery": "jewellery",
+          "Women": "women",
+          "Bags": "bags",
+          "Health": "health",
+          "Beauty": "beauty",
+          "Sports": "sports",
+          "Automotive": "automotive",
+          "Industrial": "industrial",
+          "Kids": "kids",
+          "Electronics": "electronics"
+        };
+        
+        // Get folder name or use 'general' as fallback
+        const folder = categoryFolders[req.body.category] || "general";
         cb(null, `${folder}/${Date.now().toString()}-${file.originalname}`);
       },
     }),

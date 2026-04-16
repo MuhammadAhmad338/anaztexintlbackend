@@ -9,7 +9,7 @@ const createProduct = async (req, res) => {
 
     // Create S3 upload middleware on demand
     const upload = createS3Upload();
-
+    console.log("UPLOAD:", upload);
     // Handle file upload with S3 only
     upload.array('images', 5)(req, res, async (err) => {
       if (err) {
@@ -27,29 +27,53 @@ const createProduct = async (req, res) => {
         console.log("S3 URLs:", imageUrls);
       }
 
-      // Convert category name to ID
-      let categoryId = req.body.category;
-      // If category is not a valid ObjectId, treat it as a name
-      const category = await Category.findOne({ name: categoryId });
-      if (!category) {
-        return res.status(400).json({
+      // Store category name directly
+      let categoryName = req.body.category;
+      console.log("CATEGORY NAME:", categoryName);
+      console.log("REQ.BODY:", req.body);
+      
+      // Default to "General" if no category provided
+      if (!categoryName) {
+        console.log("WARNING: No category provided, defaulting to 'General'");
+        categoryName = "General";
+      }
+      
+      try {
+        // Check if category exists, create if it doesn't
+        let category = await Category.findOne({ name: categoryName });
+        
+        if (!category) {
+          console.log(`Category "${categoryName}" not found, creating it...`);
+          category = await Category.create({ name: categoryName });
+          console.log(`Created new category: ${category.name} with ID: ${category._id}`);
+        } else {
+          console.log(`Found existing category: ${category.name} (ID: ${category._id})`);
+        }
+      } catch (categoryError) {
+        console.error("Category error:", categoryError);
+        return res.status(500).json({
           success: false,
-          message: `Category "${categoryId}" not found. Please create it first or use a valid category name.`
+          message: "Failed to process category",
+          error: categoryError.message
         });
       }
-      categoryId = category._id;
-      console.log(`Converted category "${req.body.category}" to ID: ${categoryId}`);
-
 
       const productData = {
         ...req.body,
-        category: categoryId,
+        category: categoryName,
         images: imageUrls
       };
 
+      console.log("PRODUCT DATA BEFORE CREATE:", productData);
       const product = await Product.create(productData);
-      console.log("Product created with S3 images");
-      res.status(201).json({ success: true, data: product });
+      console.log("Product created with S3 images:", product);
+      
+      // Ensure the response returns category name
+      const responseProduct = product.toObject();
+      responseProduct.category = categoryName;
+      
+      console.log("RESPONSE PRODUCT:", responseProduct);
+      res.status(201).json({ success: true, data: responseProduct });
     });
   } catch (error) {
     console.error("❌ Error:", error);
@@ -129,10 +153,10 @@ const deleteProduct = async (req, res) => {
 // --- Public Logic ---
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find({ isActive: true });
     res.status(200).json({ success: true, data: products });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
@@ -140,11 +164,34 @@ const getAllProducts = async (req, res) => {
 const getProductsByCategory = async (req, res) => {
   try {
     // Clean the category parameter to remove whitespace and newlines
-    const categoryId = req.params.category.trim();
-    console.log('Cleaned category ID:', categoryId);
+    const categoryParam = req.params.category.trim();
+    console.log('Cleaned category:', categoryParam);
     
-    const products = await Product.find({ category: categoryId });
-    res.status(200).json({ success: true, data: products });
+    // Find products by category name or ObjectId
+    let products;
+    if (categoryParam.match(/^[0-9a-fA-F]{24}$/)) {
+      // If it's an ObjectId, find by ObjectId
+      products = await Product.find({ category: categoryParam });
+    } else {
+      // If it's a category name, find by name
+      products = await Product.find({ category: categoryParam });
+    }
+    
+    // Convert ObjectId categories to names for existing products
+    const productsWithCategoryNames = await Promise.all(
+      products.map(async (product) => {
+        // If category is ObjectId (string format), convert to name
+        if (product.category && typeof product.category === 'string' && product.category.match(/^[0-9a-fA-F]{24}$/)) {
+          const category = await Category.findById(product.category);
+          if (category) {
+            product.category = category.name;
+          }
+        }
+        return product;
+      })
+    );
+    
+    res.status(200).json({ success: true, data: productsWithCategoryNames });
   } catch (error) {
     console.error('Category fetch error:', error);
     res.status(500).json({ success: false, message: error.message });

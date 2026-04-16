@@ -38,8 +38,8 @@ const productSchema = new mongoose.Schema({
 
   // CATEGORY
   category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Category",
+    type: String,
+    required: true,
     index: true
   },
 
