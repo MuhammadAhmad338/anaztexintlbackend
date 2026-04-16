@@ -84,6 +84,7 @@ const forgotPassword = async (req, res) => {
     console.log('FORGOT PASSWORD API HIT - Email:', req.body.email);
     try {
         const { email } = req.body;
+        console.log(`Email ${email}`);
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -100,9 +101,9 @@ const forgotPassword = async (req, res) => {
         await user.save();
 
         // Create reset URL
-        const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+        // const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 
-        const message = `You are receiving this email because you (or someone else) have requested the reset of a password. Please click on the following link, or paste this into your browser to complete the process:\n\n${resetUrl}\n\nIf you did not request this, please ignore this email and your password will remain unchanged.\n`;
+        const message = `You are receiving this email because you (or someone else) have requested the reset of a password. Please click on the following link, or paste this into your browser to complete the process:\n\n\n\nIf you did not request this, please ignore this email and your password will remain unchanged.\n`;
 
         try {
             await sendEmail({
