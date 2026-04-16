@@ -2,18 +2,18 @@ const nodemailer = require("nodemailer");
 
 const sendEmail = async (options) => {
     const transporter = nodemailer.createTransport({
-        host: "email-smtp.us-east-1.amazonaws.com", // change region if needed
+        host: "email-smtp.eu-north-1.amazonaws.com", // change region if needed
         port: 587,
         secure: false, // true for 465
         auth: {
-            user: process.env.SES_SMTP_USER,
-            pass: process.env.SES_SMTP_PASS,
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS
         },
     });
 
     const mailOptions = {
-        from: `Anaztex Intl <your_verified_email@yourdomain.com>`,
-        to: options.email,
+        from: "ahmadmuhammad.7700@gmail.com",
+        to: "ahmadmuhammad.7700@gmail.com",
         subject: options.subject,
         text: options.message,
         // html: "<h1>Optional HTML</h1>" // optional
