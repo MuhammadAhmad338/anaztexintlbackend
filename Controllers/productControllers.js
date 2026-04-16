@@ -31,17 +31,17 @@ const createProduct = async (req, res) => {
       let categoryName = req.body.category;
       console.log("CATEGORY NAME:", categoryName);
       console.log("REQ.BODY:", req.body);
-      
+
       // Default to "General" if no category provided
       if (!categoryName) {
         console.log("WARNING: No category provided, defaulting to 'General'");
         categoryName = "General";
       }
-      
+
       try {
         // Check if category exists, create if it doesn't
         let category = await Category.findOne({ name: categoryName });
-        
+
         if (!category) {
           console.log(`Category "${categoryName}" not found, creating it...`);
           category = await Category.create({ name: categoryName });
@@ -67,11 +67,11 @@ const createProduct = async (req, res) => {
       console.log("PRODUCT DATA BEFORE CREATE:", productData);
       const product = await Product.create(productData);
       console.log("Product created with S3 images:", product);
-      
+
       // Ensure the response returns category name
       const responseProduct = product.toObject();
       responseProduct.category = categoryName;
-      
+
       console.log("RESPONSE PRODUCT:", responseProduct);
       res.status(201).json({ success: true, data: responseProduct });
     });
@@ -166,17 +166,14 @@ const getProductsByCategory = async (req, res) => {
     // Clean the category parameter to remove whitespace and newlines
     const categoryParam = req.params.category.trim();
     console.log('Cleaned category:', categoryParam);
-    
+
     // Find products by category name or ObjectId
     let products;
-    if (categoryParam.match(/^[0-9a-fA-F]{24}$/)) {
-      // If it's an ObjectId, find by ObjectId
-      products = await Product.find({ category: categoryParam });
-    } else {
-      // If it's a category name, find by name
-      products = await Product.find({ category: categoryParam });
-    }
-    
+
+    // If it's a category name, find by name
+    products = await Product.find({ category: categoryParam });
+
+
     // Convert ObjectId categories to names for existing products
     const productsWithCategoryNames = await Promise.all(
       products.map(async (product) => {
@@ -190,7 +187,7 @@ const getProductsByCategory = async (req, res) => {
         return product;
       })
     );
-    
+
     res.status(200).json({ success: true, data: productsWithCategoryNames });
   } catch (error) {
     console.error('Category fetch error:', error);
