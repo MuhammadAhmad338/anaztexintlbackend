@@ -33,7 +33,6 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/contacts", contactRoutes);
 
-
 // Error Handling (Optional but recommended)
 app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });
