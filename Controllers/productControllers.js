@@ -58,10 +58,21 @@ const createProduct = async (req, res) => {
         });
       }
 
+      // Parse variations if sent as JSON string
+      let variations = [];
+      if (req.body.variations) {
+        try {
+          variations = JSON.parse(req.body.variations);
+        } catch (e) {
+          console.log("Variations parse error:", e);
+        }
+      }
+
       const productData = {
         ...req.body,
         category: categoryName,
-        images: imageUrls
+        images: imageUrls,
+        variations: variations
       };
 
       console.log("PRODUCT DATA BEFORE CREATE:", productData);
@@ -103,6 +114,15 @@ const editProduct = async (req, res) => {
         if (category) {
           categoryId = category._id;
           console.log(`Converted category "${req.body.category}" to ID: ${categoryId}`);
+        }
+      }
+
+      // Parse variations if sent as JSON string
+      if (req.body.variations) {
+        try {
+          req.body.variations = JSON.parse(req.body.variations);
+        } catch (e) {
+          console.log("Variations parse error:", e);
         }
       }
 

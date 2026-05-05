@@ -6,9 +6,9 @@ const userRoutes = require("./Routes/userRoutes");
 const orderRoutes = require("./Routes/orderRoutes");
 const reviewRoutes = require("./Routes/reviewRoutes");
 const productRoutes = require("./Routes/productRoutes");
-const categoryRoutes = require("./Routes/categoryRoutes");
-const paymentsRoutes = require("./Routes/paymentRoutes");
 const contactRoutes = require("./Routes/contactRoutes");
+const paymentsRoutes = require("./Routes/paymentRoutes");
+const categoryRoutes = require("./Routes/categoryRoutes");
 
 // Load environment variables FIRST
 dotenv.config();

@@ -2,17 +2,16 @@ const mongoose = require("mongoose");
 
 /* =========================
    VARIANT SCHEMA
-========================= */
-const variantSchema = new mongoose.Schema({
-  label: String,          // Size, Color, Volume etc
-  value: String,          // M, Red, 50ml etc
-  stock: { type: Number, default: 0 },
-  sku: String
-}, { _id: false });
 
 /* =========================
    INVENTORY LOG SCHEMA
 ========================= */
+
+const variantSchema = new mongoose.Schema({
+  color: { type: String, default: "" },
+  size: { type: String, default: "" },
+}, { _id: false });
+
 const inventoryLogSchema = new mongoose.Schema({
   action: {
     type: String,
