@@ -17,7 +17,7 @@ const orderSchema = new mongoose.Schema({
             quantity: { type: Number, required: true },
             price: { type: Number, required: true },
             size: { type: String },
-            variant: { type: String } // e.g., Size M or Red Shade
+            color: { type: String }
         }
     ],
     shippingAddress: {
