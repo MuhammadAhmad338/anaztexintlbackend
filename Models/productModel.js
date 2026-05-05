@@ -49,7 +49,7 @@ const productSchema = new mongoose.Schema({
   stock: { type: Number, default: 0 },
 
   // VARIANT STOCK (used if variants exist)
-  variants: [variantSchema],
+  variations: [variantSchema],
 
   // INVENTORY SETTINGS
   trackInventory: { type: Boolean, default: true },
