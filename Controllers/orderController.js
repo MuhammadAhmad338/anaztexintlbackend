@@ -14,8 +14,10 @@ const createOrder = async (req, res) => {
             taxPrice,
             shippingPrice,
             totalPrice,
+
             stripePaymentIntentId
         } = req.body;
+
 
         if (!orderItems || orderItems.length === 0) {
             return res.status(400).json({ message: 'No order items' });
@@ -52,7 +54,7 @@ const createOrder = async (req, res) => {
                     quantity: item.quantity,
                     price: item.price,
                     size: item.size || null,
-                    variant: item.variant || item.size || null
+                    color: item.color || null
                 };
             } else {
                 throw new Error(`Invalid Product ID format for "${item.name}". Expected 24-character ObjectId, got: ${item.id}`);
