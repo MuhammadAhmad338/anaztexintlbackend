@@ -39,7 +39,8 @@ const createS3Upload = () => {
           "Automotive": "automotive",
           "Industrial": "industrial",
           "Kids": "kids",
-          "Electronics": "electronics"
+          "Electronics": "electronics",
+          "BedSheets": "bedsheets"
         };
         
         // Get folder name or use 'general' as fallback
