@@ -46,7 +46,7 @@ const productSchema = new mongoose.Schema({
   images: [String],
 
   // BASE STOCK (used if no variants)
-  stock: { type: Number, default: 0 },
+  stock: { type: Number, required: true, default: 0 },
 
   // VARIANT STOCK (used if variants exist)
   variations: [variantSchema],

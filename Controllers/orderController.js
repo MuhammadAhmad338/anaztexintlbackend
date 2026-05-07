@@ -61,6 +61,29 @@ const createOrder = async (req, res) => {
             }
         });
 
+        // Stock management Logic 
+        for (const item of transformedOrderItems) {
+            const product = await Product.findById(item.product);
+            console.log('Product found:', product);
+
+            if (!product) {
+                return res.status(404).json({
+                    message: `Product not found`
+                });
+            }
+
+            // Check stock availability
+            if (product.stock < item.quantity) {
+                return res.status(400).json({
+                    message: `${product.name} is out of stock`
+                });
+            }
+
+            // Reduce stock
+            product.stock -= item.quantity;
+            await product.save();
+        }
+
         // -----------------------------
         // Payment Logic
         // -----------------------------
