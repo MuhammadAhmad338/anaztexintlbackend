@@ -36,7 +36,7 @@ app.use("/api/contacts", contactRoutes);
 
 // Fake API Route
 app.get("/api/hello", (req, res) => {
-    res.json({ message: "Hello, Worl213d21!" });
+    res.json({ message: "Hello, adWorl213d21!" });
 });
 
 
