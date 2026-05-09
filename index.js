@@ -14,6 +14,7 @@ const categoryRoutes = require("./Routes/categoryRoutes");
 dotenv.config();
 const app = express();
 
+console.log("Hello world");
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
