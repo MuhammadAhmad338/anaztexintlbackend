@@ -55,7 +55,10 @@ const loginUser = async (req, res) => {
         }
 
         // Check password
-const isMatch = await bcrypt.compare(password, user.password);
+        console.log('CHECKING PASSWORD for user:', email);
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log('PASSWORD MATCH RESULT:', isMatch, 'for user:', email);
+        
         if (!isMatch) {
             console.log('LOGIN FAILED - Invalid password:', { email });
             return res.status(401).json({ message: "Invalid email or password" });
@@ -64,7 +67,7 @@ const isMatch = await bcrypt.compare(password, user.password);
         // Generate JWT
         const token = jwt.sign(
             { id: user._id, role: user.role },
-            process.env.JWT_SECRET, // Move this to .env later
+            process.env.JWT_SECRET,
             { expiresIn: "30d" }
         );
 
