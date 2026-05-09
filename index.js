@@ -34,12 +34,6 @@ app.use("/api/payments", paymentsRoutes);
 app.use("/api/contacts", contactRoutes);
 
 
-// Fake API Route
-app.get("/api/hello", (req, res) => {
-    res.json({ message: "Hello, adWorl213d21!" });
-});
-
-
 // Error Handling (Optional but recommended)
 app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });
