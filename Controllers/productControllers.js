@@ -161,6 +161,17 @@ const editProduct = async (req, res) => {
   }
 };
 
+
+const getBestsellers = async (req, res) => {
+  try {
+    // Placeholder logic for bestsellers - you can replace this with actual sales data
+    const bestsellers = await Product.find({ isActive: true }).sort({ salesCount: -1 }).limit(10);
+    res.status(200).json({ success: true, data: bestsellers });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 const deleteProduct = async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
@@ -221,5 +232,6 @@ module.exports = {
   editProduct,
   deleteProduct,
   getAllProducts,
-  getProductsByCategory
+  getProductsByCategory,
+  getBestsellers
 };

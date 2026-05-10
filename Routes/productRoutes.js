@@ -3,10 +3,11 @@ const router = express.Router();
 const { verifyToken } = require("../Middleware/auth");
 const { isAdmin } = require("../Middleware/adminMiddleware");
 // const uploadMiddleware = require("../Middleware/s3upload"); // This is now a promise
-const { getAllProducts, createProduct, editProduct, deleteProduct, getProductsByCategory } = require("../Controllers/productControllers");
+const { getAllProducts, createProduct, editProduct, deleteProduct, getProductsByCategory, getBestsellers } = require("../Controllers/productControllers");
 
 // Customer Routes
 router.get("/", getAllProducts);
+router.get("/bestsellers", getBestsellers); // You can implement bestseller logic in the controller
 
 // Admin Routes - we'll handle upload middleware in the controller
 router.post("/", verifyToken, isAdmin, createProduct);
