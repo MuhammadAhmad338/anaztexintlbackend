@@ -1,5 +1,6 @@
 const Order = require('../Models/orderModel');
 const Product = require('../Models/productModel');
+const { generateTrackingNumber } = require('../Middleware/trackingidcreation.js');
 
 // Create new order
 const createOrder = async (req, res) => {
