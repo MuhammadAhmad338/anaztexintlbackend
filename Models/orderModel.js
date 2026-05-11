@@ -79,6 +79,28 @@ const orderSchema = new mongoose.Schema({
         required: true,
         default: false
     },
+    tracking: {
+        trackingNumber: {
+            type: String,
+            unique: true,
+            sparse: true
+        },
+        carrier: {
+            type: String,
+            default: null
+        },
+        status: {
+            type: String,
+            default: 'Processing'
+        },
+        timeline: [
+            {
+                status: String,
+                location: String,
+                time: Date
+            }
+        ]
+    },
     deliveredAt: {
         type: Date
     }

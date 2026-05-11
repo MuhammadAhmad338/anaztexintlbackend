@@ -99,6 +99,7 @@ const createOrder = async (req, res) => {
 
         console.log("Payment Method:", paymentMethod);
         console.log("isPaid will be set to:", isPaid);
+        const trackingid = generateTrackingNumber();
 
         const order = new Order({
             user: userId,
@@ -112,6 +113,9 @@ const createOrder = async (req, res) => {
             stripePaymentIntentId,
             isPaid,
             paidAt,
+            tracking: {
+                trackingNumber: trackingid
+            },
             paymentStatus
         });
 
