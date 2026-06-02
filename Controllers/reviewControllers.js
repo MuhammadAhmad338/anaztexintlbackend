@@ -4,7 +4,7 @@ const Product = require("../Models/productModel");
 // --- Review Logic ---
 const addReview = async (req, res) => {
     try {
-        const { productId, rating, comment } = req.body;
+        const { product: productId, rating, comment } = req.body;
         const user = req.user.id;
 
         // Check if user already reviewed this product
@@ -18,13 +18,13 @@ const addReview = async (req, res) => {
 
         const review = await Review.create({
             user,
-         productId,
+            product: productId,
             rating,
             comment
         });
 
         // Calculate average rating
-        const reviews = await Review.find({  productId });
+        const reviews = await Review.find({ product: productId });
         const avgRating = reviews.reduce((acc, item) => item.rating + acc, 0) / reviews.length;
 
         await Product.findByIdAndUpdate(productId, { rating: avgRating });
@@ -38,7 +38,7 @@ const addReview = async (req, res) => {
 
 const getProductReviews = async (req, res) => {
     try {
-        const reviews = await Review.find({ productId: req.params.productId }).populate("user", "name");
+        const reviews = await Review.find({ product: req.params.productId }).populate("user", "name");
         res.status(200).json({ success: true, data: reviews });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
