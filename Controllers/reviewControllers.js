@@ -31,6 +31,7 @@ const addReview = async (req, res) => {
 
         res.status(201).json({ success: true, data: review });
     } catch (error) {
+            console.log('ADD REVIEW ERROR:', error.message);  // 👈 add this
         res.status(400).json({ success: false, message: error.message });
     }
 };
