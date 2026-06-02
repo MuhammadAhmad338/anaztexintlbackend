@@ -6,7 +6,7 @@ const addReview = async (req, res) => {
     try {
         console.log('ADD REVIEW - req.body:', req.body);
         
-        const { product: productId, rating, comment } = req.body;
+        const { productId, rating, comment } = req.body;
         const user = req.user.id;
 
         // Validate product existence
