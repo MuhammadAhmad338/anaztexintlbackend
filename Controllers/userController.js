@@ -45,7 +45,11 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     console.log('LOGIN API HIT - User login attempt:', { email: req.body.email });
     try {
+         if (!req.body || !req.body.email) {
+        return res.status(400).json({ message: "Email and password are required" });
+    }
         const { email, password } = req.body;
+        
 
         // Find user
         const user = await User.findOne({ email });
