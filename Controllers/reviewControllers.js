@@ -7,6 +7,12 @@ const addReview = async (req, res) => {
         const { product: productId, rating, comment } = req.body;
         const user = req.user.id;
 
+        // Validate product existence
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+
         // Check if user already reviewed this product
         const existingReview = await Review.findOne({ user, product: productId });
         if (existingReview) {
