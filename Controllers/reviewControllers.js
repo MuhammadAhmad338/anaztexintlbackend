@@ -10,6 +10,7 @@ const addReview = async (req, res) => {
         // Validate product existence
         const product = await Product.findById(productId);
         if (!product) {
+            consele.log('ADD REVIEW FAILED - Product not found:', { productId });
             return res.status(404).json({ success: false, message: "Product not found" });
         }
 
