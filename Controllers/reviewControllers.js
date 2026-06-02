@@ -4,7 +4,7 @@ const Product = require("../Models/productModel");
 // --- Review Logic ---
 const addReview = async (req, res) => {
     try {
-        const { product: productId, rating, comment } = req.body;
+        const { productId, rating, comment } = req.body;
         const user = req.user.id;
 
         // Check if user already reviewed this product
