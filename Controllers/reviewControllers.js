@@ -4,13 +4,15 @@ const Product = require("../Models/productModel");
 // --- Review Logic ---
 const addReview = async (req, res) => {
     try {
+        console.log('ADD REVIEW - req.body:', req.body);
+        
         const { product: productId, rating, comment } = req.body;
         const user = req.user.id;
 
         // Validate product existence
         const product = await Product.findById(productId);
         if (!product) {
-            consele.log('ADD REVIEW FAILED - Product not found:', { productId });
+            console.log('ADD REVIEW FAILED - Product not found:', { productId });
             return res.status(404).json({ success: false, message: "Product not found" });
         }
 
@@ -38,7 +40,7 @@ const addReview = async (req, res) => {
 
         res.status(201).json({ success: true, data: review });
     } catch (error) {
-            console.log('ADD REVIEW ERROR:', error.message);  // 👈 add this
+        console.log('ADD REVIEW ERROR:', error.message);
         res.status(400).json({ success: false, message: error.message });
     }
 };
