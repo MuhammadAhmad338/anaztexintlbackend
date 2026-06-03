@@ -15,7 +15,12 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({ origin: false })); // Keeps your routes open but stops Express from sending duplicate headers
+app.use(cors({
+  origin: ['https://anzatexintl.com', 'https://www.anzatexintl.com'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use('/uploads', express.static('uploads')); // Serve uploaded files
