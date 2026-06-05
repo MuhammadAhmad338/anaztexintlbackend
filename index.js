@@ -15,8 +15,7 @@ const app = express();
 
 // ── Middleware ──────────────────────────────────────────
 app.use(cors({
-    origin: true, // reflects request origin dynamically
-    credentials: true,
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
