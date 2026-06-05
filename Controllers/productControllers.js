@@ -194,32 +194,24 @@ const getAllProducts = async (req, res) => {
 //Get the product based on the category
 const getProductsByCategory = async (req, res) => {
   try {
-    // Clean the category parameter to remove whitespace and newlines
     const categoryParam = req.params.category.trim();
-    console.log('Cleaned category:', categoryParam);
+    console.log('Category param:', categoryParam);
 
-    // Find products by category name or ObjectId
-    let products;
+    // Step 1: find the Category document by name (case-insensitive)
+    const categoryDoc = await Category.findOne({
+      name: { $regex: new RegExp(`^${categoryParam}$`, 'i') }
+    });
 
-    // If it's a category name, find by name
-    products = await Product.find({ category: categoryParam });
+    if (!categoryDoc) {
+      return res.status(404).json({ success: false, message: `Category "${categoryParam}" not found` });
+    }
 
+    console.log('Found category:', categoryDoc._id, categoryDoc.name);
 
-    // Convert ObjectId categories to names for existing products
-    const productsWithCategoryNames = await Promise.all(
-      products.map(async (product) => {
-        // If category is ObjectId (string format), convert to name
-        if (product.category && typeof product.category === 'string' && product.category.match(/^[0-9a-fA-F]{24}$/)) {
-          const category = await Category.findById(product.category);
-          if (category) {
-            product.category = category.name;
-          }
-        }
-        return product;
-      })
-    );
+    // Step 2: query products by the category ObjectId
+    const products = await Product.find({ category: categoryDoc._id }).populate('category');
 
-    res.status(200).json({ success: true, data: productsWithCategoryNames });
+    res.status(200).json({ success: true, data: products });
   } catch (error) {
     console.error('Category fetch error:', error);
     res.status(500).json({ success: false, message: error.message });
