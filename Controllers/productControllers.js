@@ -197,24 +197,20 @@ const getProductsByCategory = async (req, res) => {
     const categoryParam = req.params.category.trim();
     console.log('Category param:', categoryParam);
 
-    // Step 1: find the Category document by name (case-insensitive)
-    const categoryDoc = await Category.findOne({
-      name: { $regex: new RegExp(`^${categoryParam}$`, 'i') }
+    const products = await Product.find({
+      category: new RegExp(`^${categoryParam}$`, 'i')
     });
 
-    if (!categoryDoc) {
-      return res.status(404).json({ success: false, message: `Category "${categoryParam}" not found` });
-    }
+    res.status(200).json({
+      success: true,
+      data: products
+    });
 
-    console.log('Found category:', categoryDoc._id, categoryDoc.name);
-
-    // Step 2: query products by the category ObjectId
-    const products = await Product.find({ category: categoryDoc._id }).populate('category');
-
-    res.status(200).json({ success: true, data: products });
   } catch (error) {
-    console.error('Category fetch error:', error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
